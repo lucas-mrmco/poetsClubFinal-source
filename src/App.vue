@@ -46,7 +46,7 @@ import { SupabaseAuthClient } from '@supabase/supabase-js/dist/module/lib/Supaba
       <br><button v-on:click="createPoem()">Add the poem</button>
       <button v-on:click="fetchpoems()">List of poems</button><br>
       <label for="poemtitle" id="poemtitle" style="color: teal;font-weight: 500;"> ... </label>
-      <img id="poemillustration" src="./assets/null.jpg" alt="poem illustration" width="75" height="75"
+      <img id="poemillustration" src="./assets/null.jpg" alt="poem images" width="75" height="75"
         style="background-color:gray;" /><br>
       <label for="poemlanguage" id="poemlanguage"> ... </label><br>
       <textarea id="poemcontent" readonly rows="10" cols="50"> ... </textarea> <br>
@@ -109,11 +109,11 @@ export default {
       var res;
 
       const { data: objects, error } = await supabase.storage
-        .from('illustrations')
+        .from('images')
         .upload(supabase.auth.user().id + "_" + file.files[0].name, file.files[0])
 
       res = supabase.storage
-        .from('illustrations')
+        .from('images')
         .getPublicUrl(supabase.auth.user().id + "_" + file.files[0].name).data.publicURL;
 
       try {
