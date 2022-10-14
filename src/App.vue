@@ -5,48 +5,57 @@ import { createClient } from '@supabase/supabase-js'
 import { SupabaseAuthClient } from '@supabase/supabase-js/dist/module/lib/SupabaseAuthClient'
 </script>
 
-<template>    
-    <header>
+<template>
+  <header>
     <router-link to="/">Go to Home</router-link>
     <img alt="Poetry" class="logo" src="./assets/logo.png" width="125" height="125" />
     <div class="wrapper" id="signOut">
-      <div><SignIn msg="Poet ! Tell us who you are !" /></div>
+      <div>
+        <SignIn msg="Poet ! Tell us who you are !" />
+      </div>
       <label>email: </label><br>
-	    <input type="email" required v-model="email" placeholder="username@domain.tld"><br>
-	    <label>password: </label><br>
-	    <input type="password" required v-model="passwd" ><br>
+      <input type="email" required v-model="email" placeholder="username@domain.tld"><br>
+      <label>password: </label><br>
+      <input type="password" required v-model="passwd"><br>
       <button v-on:click="register()">Sign Up</button>
       <button v-on:click="login()">Sign In</button>
-      
+
     </div>
     <div class="hidden" id="addPoem">
-      <div><SignIn msg="Write your poem !" /></div>
+      <div>
+        <SignIn msg="Write your poem !" />
+      </div>
       <h3>The poem remains private, until you make it public</h3>
       <label>Poem's title</label><br>
-	      <input type="text" required name="title" v-model="title" placeholder="edit me"><br>
-	      <label>Poem's content</label><br>
-        <textarea required name="content" v-model="content" placeholder="edit me" rows="10" cols="50">Your poem here ...
+      <input type="text" required name="title" v-model="title" placeholder="edit me"><br>
+      <label>Poem's content</label><br>
+      <textarea required name="content" v-model="content" placeholder="edit me" rows="10" cols="50">Your poem here ...
         </textarea> <br>
-        <label>Illustration: </label>
-        
-	      <input type="file"  id="file" name="file" placeholder="my file" accept="image/png, image/jpeg"><br>
-	      <!--<img id="illustration" src="./assets/null.png" alt="poem illustration" width="75" height="75"/><br>-->
-        <input type="checkbox" v-model="hidden" value=true/>
-        <label>Hidden poem</label><br>
-        <label>Filter by title :</label>
-        <input v-on:keyup.enter="filterpoems()" type="text" placeholder="Filter poems" v-model="text"/>
-        <br><button v-on:click="createPoem()">Add the poem</button>
-        <button v-on:click="fetchpoems()">List of poems</button><br>
-        <label for="poemtitle" id="poemtitle" style="color: teal;font-weight: 500;"> ... </label> 
-        <img id="poemillustration" src="./assets/null.jpg" alt="poem illustration" width="75" height="75" style="background-color:gray;"/><br>
-        <label for="poemlanguage" id="poemlanguage"> ... </label><br>
-      <textarea  id="poemcontent" readonly rows="10" cols="50"> ... </textarea> <br>
+
+      <label>Poem's language</label><br>
+      <input type="text" required name="language" v-model="language" placeholder="edit me" rows="10" cols="10" />
+
+      <label>Illustration: </label>
+
+      <input type="file" id="file" name="file" placeholder="my file" accept="image/png, image/jpeg"><br>
+      <!--<img id="illustration" src="./assets/null.png" alt="poem illustration" width="75" height="75"/><br>-->
+      <input type="checkbox" v-model="hidden" value=true />
+      <label>Hidden poem</label><br>
+      <label>Filter by title :</label>
+      <input v-on:keyup.enter="filterpoems()" type="text" placeholder="Filter poems" v-model="text" />
+      <br><button v-on:click="createPoem()">Add the poem</button>
+      <button v-on:click="fetchpoems()">List of poems</button><br>
+      <label for="poemtitle" id="poemtitle" style="color: teal;font-weight: 500;"> ... </label>
+      <img id="poemillustration" src="./assets/null.jpg" alt="poem illustration" width="75" height="75"
+        style="background-color:gray;" /><br>
+      <label for="poemlanguage" id="poemlanguage"> ... </label><br>
+      <textarea id="poemcontent" readonly rows="10" cols="50"> ... </textarea> <br>
       <button v-on:click="nextPoem()">Next poem</button><br>
-      <hr/>
+      <hr />
     </div>
-    
+
   </header>
-  
+
   <main>
     <FamousPoets />
   </main>
@@ -61,10 +70,10 @@ var poemsList
 var currentpoem
 
 export default {
-  methods: {  
+  methods: {
     //this method allows a new user to sign up the system. Once done, the user receives an email
     //asking for account validation. Once the validation made the user is added to the system
-    async register(){
+    async register() {
       try {
         const { user, session, error } = await supabase.auth.signUp({
           email: this.email,
@@ -77,7 +86,7 @@ export default {
     },
     //this method allows the already registred user to log in the system.
     //only authenticated users can later add or read the poems
-    async login(){
+    async login() {
       try {
         const { user, session, error } = await supabase.auth.signIn({
           email: this.email,
@@ -86,8 +95,8 @@ export default {
         if (error) throw error;
 
         else {
-          document.getElementById('signOut').style.visibility='hidden'
-          document.getElementById('addPoem').style.visibility='visible'
+          document.getElementById('signOut').style.visibility = 'hidden'
+          document.getElementById('addPoem').style.visibility = 'visible'
         }
       } catch (error) {
         alert(error.error_description || error.message);
@@ -96,82 +105,82 @@ export default {
     //this method allows to add new poem for the authenticated user (after sign in) 
     //it is called when the user click on the add poem button after being entered
     //the title, the content, the visibility and the associated illustration
-    async createPoem(){
+    async createPoem() {
       var res;
 
-        const { data: objects, error } = await supabase.storage
-          .from('illustrations')
-          .upload(supabase.auth.user().id+"_"+file.files[0].name, file.files[0])
+      const { data: objects, error } = await supabase.storage
+        .from('illustrations')
+        .upload(supabase.auth.user().id + "_" + file.files[0].name, file.files[0])
 
-        res = supabase.storage
-          .from('illustrations')
-          .getPublicUrl(supabase.auth.user().id+"_"+file.files[0].name).data.publicURL;
+      res = supabase.storage
+        .from('illustrations')
+        .getPublicUrl(supabase.auth.user().id + "_" + file.files[0].name).data.publicURL;
 
-        try{
-          const { data, error } = await supabase
-            .from('poems')
-            .insert([
-              { hidden: this.hidden, email: this.email, title: this.title, content: this.content, illustrationurl: res}
-            ])
-            if(error) throw(error)
-        } catch(error) {alert(error.error_description || error.message)}
+      try {
+        const { data, error } = await supabase
+          .from('poems')
+          .insert([
+            { hidden: this.hidden, email: this.email, title: this.title, content: this.content, language: this.language, illustrationurl: res }
+          ])
+        if (error) throw (error)
+      } catch (error) { alert(error.error_description || error.message) }
     },
     //this method allows to extract all readable poems of the authenticated user
     //including his peoms and the not hidden poems. This policy is implemented by the supabase system 
-    async fetchpoems(){
-        try{
-          const { data, error } = await supabase
-            .from('poems')
-            .select()
-          poemsList=data
-          if (error) throw error;
-          if(data.length>0){
-            document.getElementById('poemtitle').innerHTML=data[0].title+"    "
-            document.getElementById('poemcontent').value=data[0].content
-            document.getElementById('poemillustration').src=data[0].illustrationurl
-            document.getElementById('poemlanguage').innerHTML=data[0].language+"     "
-          }
-          currentpoem=0;
-        } catch (error) {
-          alert(error.error_description || error.message);
-        }
-    },
-    //this function allows to display the next accessibe poem for the current user
-    //the fetch button should be selected before
-    nextPoem(){
-      if(currentpoem<poemsList.length-1) {
-        currentpoem++
-        document.getElementById('poemtitle').innerHTML=poemsList[currentpoem].title+"    "
-        document.getElementById('poemcontent').value=poemsList[currentpoem].content
-        document.getElementById('poemillustration').src=poemsList[currentpoem].illustrationurl
-        document.getElementById('poemlanguage').innerHTML=poemsList[currentpoem].language+"    "
-      } else currentpoem = 0
-        document.getElementById('poemtitle').innerHTML=poemsList[currentpoem].title+"    "
-        document.getElementById('poemcontent').value=poemsList[currentpoem].content
-        document.getElementById('poemillustration').src=poemsList[currentpoem].illustrationurl
-        document.getElementById('poemlanguage').innerHTML=poemsList[currentpoem].language+"    "
-    },
-    
-    async filterpoems(){
+    async fetchpoems() {
       try {
         const { data, error } = await supabase
-        .from('poems')
-        .select()
-        .like('title', "%" + this.text + "%")
+          .from('poems')
+          .select()
         poemsList = data
         if (error) throw error;
         if (data.length > 0) {
-            document.getElementById('poemtitle').innerHTML = data[0].title + "   "
-            document.getElementById('poemcontent').value = data[0].content
-            document.getElementById('poemillustration').src = data[0].illustrationurl
-            document.getElementById('poemlanguage').innerHTML = data[0].language+"     "
+          document.getElementById('poemtitle').innerHTML = data[0].title + "    "
+          document.getElementById('poemcontent').value = data[0].content
+          document.getElementById('poemillustration').src = data[0].illustrationurl
+          document.getElementById('poemlanguage').innerHTML = data[0].language + "     "
         }
-        currentpoem=0;
+        currentpoem = 0;
       } catch (error) {
-      alert(error.error_description || error.message)
+        alert(error.error_description || error.message);
+      }
+    },
+    //this function allows to display the next accessibe poem for the current user
+    //the fetch button should be selected before
+    nextPoem() {
+      if (currentpoem < poemsList.length - 1) {
+        currentpoem++
+        document.getElementById('poemtitle').innerHTML = poemsList[currentpoem].title + "    "
+        document.getElementById('poemcontent').value = poemsList[currentpoem].content
+        document.getElementById('poemillustration').src = poemsList[currentpoem].illustrationurl
+        document.getElementById('poemlanguage').innerHTML = poemsList[currentpoem].language + "    "
+      } else currentpoem = 0
+      document.getElementById('poemtitle').innerHTML = poemsList[currentpoem].title + "    "
+      document.getElementById('poemcontent').value = poemsList[currentpoem].content
+      document.getElementById('poemillustration').src = poemsList[currentpoem].illustrationurl
+      document.getElementById('poemlanguage').innerHTML = poemsList[currentpoem].language + "    "
+    },
+
+    async filterpoems() {
+      try {
+        const { data, error } = await supabase
+          .from('poems')
+          .select()
+          .like('title', "%" + this.text + "%")
+        poemsList = data
+        if (error) throw error;
+        if (data.length > 0) {
+          document.getElementById('poemtitle').innerHTML = data[0].title + "   "
+          document.getElementById('poemcontent').value = data[0].content
+          document.getElementById('poemillustration').src = data[0].illustrationurl
+          document.getElementById('poemlanguage').innerHTML = data[0].language + "     "
+        }
+        currentpoem = 0;
+      } catch (error) {
+        alert(error.error_description || error.message)
       }
     }
-  }  
+  }
 }
 </script>
 
@@ -179,12 +188,12 @@ export default {
 @import './assets/base.css';
 
 header .hidden {
-    visibility: hidden;
-    overflow: hidden;
-    display: flex;
-    display:inline-block;
-    place-items: flex-start;
-    flex-wrap: wrap;
+  visibility: hidden;
+  overflow: hidden;
+  display: flex;
+  display: inline-block;
+  place-items: flex-start;
+  flex-wrap: wrap;
 }
 
 #app {
@@ -237,7 +246,7 @@ a,
 
   header .wrapper {
     display: flex;
-    display:inline-block;
+    display: inline-block;
     place-items: flex-start;
     flex-wrap: wrap;
   }
