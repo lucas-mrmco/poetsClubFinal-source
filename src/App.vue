@@ -41,9 +41,14 @@ import { SupabaseAuthClient } from '@supabase/supabase-js/dist/module/lib/Supaba
       <!--<img id="illustration" src="./assets/null.png" alt="poem illustration" width="75" height="75"/><br>-->
       <input type="checkbox" v-model="hidden" value=true />
       <label>Hidden poem</label><br>
+
+      <button v-on:click="createPoem()">Add the poem</button>
+
       <label>Filter by title :</label>
       <input v-on:keyup.enter="filterpoems()" type="text" placeholder="Filter poems" v-model="text" />
-      <br><button v-on:click="createPoem()">Add the poem</button>
+      <br>
+      <button v-on:click="filterpoems()">Filtrer the poem</button>
+
       <button v-on:click="fetchpoems()">List of poems</button><br>
       <label for="poemtitle" id="poemtitle" style="color: teal;font-weight: 500;"> ... </label>
       <img id="poemillustration" src="./assets/null.jpg" alt="poem images" width="75" height="75"
